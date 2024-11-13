@@ -7,9 +7,9 @@ from repository import user_repository
 
 
 async def create_user(user: User) -> int:
-    if await check_exist_user(user):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="User already exists")
+    exist_user = await check_exist_user(user)
+    if exist_user:
+        raise Exception("User already exists")
     else:
         return await user_repository.create_user(user)
 
@@ -23,16 +23,9 @@ async def check_exist_user(user: User) -> bool:
 
 
 async def register_user_by_id(user_id: int):
-    if await get_user_by_id(user_id):
-        await user_repository.register_user_by_id(user_id)
-    else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="User Not exists")
+    await user_repository.register_user_by_id(user_id)
 
 
 async def update_user_by_id(user_id: int, user: User):
-    if await get_user_by_id(user_id):
-        await user_repository.update_user_by_id(user_id, user)
-    else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="User Not exists")
+    await user_repository.update_user_by_id(user_id, user)
+
