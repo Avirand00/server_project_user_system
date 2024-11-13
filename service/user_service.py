@@ -23,8 +23,11 @@ async def check_exist_user(user: User) -> bool:
 
 
 async def register_user_by_id(user_id: int):
-    # user_repository.
-    pass
+    if await get_user_by_id(user_id):
+        await user_repository.register_user_by_id(user_id)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="User Not exists")
 
 
 async def update_user_by_id(user_id: int, user: User):

@@ -23,7 +23,6 @@ async def get_by_id(user_id: int):
 
 @router.put("/{user_id}", status_code=status.HTTP_200_OK)
 async def update_user(user_id: int, user: User):
-    print(user)
     await user_service.update_user_by_id(user_id, user)
 
 
@@ -33,3 +32,6 @@ async def delete_user(user_id: int):
     pass
 
 
+@router.put("/register/{user_id}", status_code=status.HTTP_200_OK)
+async def register_user(user_id: int):
+    await user_service.register_user_by_id(user_id)
