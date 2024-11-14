@@ -66,3 +66,8 @@ async def update_user_by_id(user_id: int, user: User):
               "user_id": user_id}
 
     await database.execute(query, values=values)
+
+
+async def register_user_by_id(user_id: int):
+    query = f"UPDATE {TABLE_NAME} SET is_registered=TRUE WHERE id = :user_id"
+    await database.execute(query, values={"user_id": user_id})
