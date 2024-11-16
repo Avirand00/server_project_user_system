@@ -36,17 +36,6 @@ async def get_by_id(user_id: int) -> Optional[User]:
         return None
 
 
-async def check_exist_user_by_details(first_name: str, last_name: str, address: str) -> bool:
-    query = f"SELECT * FROM {TABLE_NAME} WHERE first_name=:first_name AND last_name=:last_name AND address=:address"
-    result = await database.fetch_one(query, values={"first_name": first_name,
-                                                     "last_name": last_name,
-                                                     "address": address})
-    if result:
-        return True
-    else:
-        return False
-
-
 async def update_user_by_id(user_id: int, user: User):
     query = f"""
         UPDATE {TABLE_NAME}
@@ -66,6 +55,11 @@ async def update_user_by_id(user_id: int, user: User):
               "user_id": user_id}
 
     await database.execute(query, values=values)
+
+
+async def delete_user_by_id(user_id: int):
+    query = f"DELETE FROM {TABLE_NAME} WHERE id=:user_id"
+    await database.execute(query, values={"user_id": user_id})
 
 
 async def register_user_by_id(user_id: int):
