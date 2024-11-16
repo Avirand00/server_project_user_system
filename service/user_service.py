@@ -1,31 +1,60 @@
 from typing import Optional
-
 from fastapi import HTTPException
 from starlette import status
+from api.internalApi.pollService import poll_service_api
 from model.user import User
 from repository import user_repository
 
 
 async def create_user(user: User) -> int:
-    exist_user = await check_exist_user(user)
-    if exist_user:
-        raise Exception("User already exists")
-    else:
+    try:
         return await user_repository.create_user(user)
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="User Already Exists")
 
 
 async def get_user_by_id(user_id: int) -> Optional[User]:
-    return await user_repository.get_by_id(user_id)
-
-
-async def check_exist_user(user: User) -> bool:
-    return await user_repository.check_exist_user_by_details(user.first_name, user.last_name, user.address)
-
-
-async def register_user_by_id(user_id: int):
-    await user_repository.register_user_by_id(user_id)
+    user = await user_repository.get_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User {user_id} Not Found")
+    return user
 
 
 async def update_user_by_id(user_id: int, user: User):
-    await user_repository.update_user_by_id(user_id, user)
+    exist_user = await get_user_by_id(user_id)
+    if not exist_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User {user_id} Not Found")
+    try:
+        await user_repository.update_user_by_id(user_id, user)
+    except Exception as e:
+        error_details = str(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=error_details)
 
+
+async def delete_user_by_id(user_id: int):
+    exist_user = await get_user_by_id(user_id)
+    if not exist_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User: {user_id} Not Found")
+
+    await poll_service_api.delete_all_user_poll_data(user_id)
+
+    try:
+        await user_repository.delete_user_by_id(user_id)
+    except Exception as e:
+        error_details = str(e)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=error_details)
+
+
+async def register_user_by_id(user_id: int):
+    exist_user = get_user_by_id(user_id)
+    if not exist_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User: {user_id} Not Found")
+
+    await user_repository.register_user_by_id(user_id)
