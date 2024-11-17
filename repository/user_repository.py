@@ -7,24 +7,21 @@ TABLE_NAME = "users"
 
 async def create_user(user: User) -> int:
     query = f"""
-        INSERT INTO {TABLE_NAME} (first_name, last_name, email, age, address, joining_date, is_registered)
-        VALUES (:first_name, :last_name, :email, :age, :address, :joining_date, :is_registered)    
+        INSERT INTO {TABLE_NAME} (first_name, last_name, email, age, address, joining_date)
+        VALUES (:first_name, :last_name, :email, :age, :address, :joining_date)    
     """
     values = {"first_name": user.first_name,
               "last_name": user.last_name,
               "email": user.email,
               "age": user.age,
               "address": user.address,
-              "joining_date": user.joining_date,
-              "is_registered": user.is_registered}
+              "joining_date": user.joining_date}
 
     async with database.transaction():
         await database.execute(query, values)
         last_record_id = await database.fetch_one("SELECT LAST_INSERT_ID()")
 
-    user_id = last_record_id[0]
-    user.id = user_id
-    return user_id
+    return last_record_id[0]
 
 
 async def get_by_id(user_id: int) -> Optional[User]:
