@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from starlette import status
 from model.user import User
 from service import user_service

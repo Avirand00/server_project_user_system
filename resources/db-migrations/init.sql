@@ -8,7 +8,7 @@ CREATE TABLE users (
     age INT NOT NULL,
     address VARCHAR (255) NOT NULL,
     joining_date DATE NOT NULL,
-    is_registered BOOLEAN NOT NULL
+    is_registered BOOLEAN DEFAULT FALSE NULL
 );
 
 INSERT INTO users (first_name, last_name, email, age, address, joining_date, is_registered) VALUES

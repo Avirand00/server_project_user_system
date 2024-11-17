@@ -9,9 +9,14 @@ from repository import user_repository
 async def create_user(user: User) -> int:
     try:
         return await user_repository.create_user(user)
-    except Exception:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail="User Already Exists")
+    except Exception as e:
+        error_details = str(e)
+        if "1062" in error_details:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="User Already Exists (with that email)")
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=error_details)
 
 
 async def get_user_by_id(user_id: int) -> Optional[User]:

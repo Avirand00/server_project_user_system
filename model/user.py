@@ -11,4 +11,4 @@ class User(BaseModel):
     age: int
     address: str
     joining_date: datetime
-    is_registered: bool
+    is_registered: Optional[bool] = None
