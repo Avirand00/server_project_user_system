@@ -57,7 +57,7 @@ async def delete_user_by_id(user_id: int):
 
 
 async def register_user_by_id(user_id: int):
-    exist_user = get_user_by_id(user_id)
+    exist_user = await get_user_by_id(user_id)
     if not exist_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"User: {user_id} Not Found")
